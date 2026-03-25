@@ -24,7 +24,8 @@ public class TestCommand extends TestCase {
    private MsgInterceptor updateInterceptor;
 
    public static void main(String[] args) {
-      junit.swingui.TestRunner.run(TestCommand.class);
+      // fix this test later, this needs to be adapted to juinit 6
+      //junit.swingui.TestRunner.run(TestCommand.class);
    }
 
    /**

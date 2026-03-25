@@ -58,7 +58,8 @@ public class TestResultSetToXmlConverter extends XMLTestCase {
      * @param args Command line settings
      */
     public static void main(String[] args) {
-        junit.swingui.TestRunner.run(TestResultSetToXmlConverter.class);
+       // fix this test later, this needs to be adapted to juinit 6
+        //junit.swingui.TestRunner.run(TestResultSetToXmlConverter.class);
     }
 
     /**
