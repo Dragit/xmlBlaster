@@ -67,7 +67,7 @@ TODO
    <!-- C++/C user guide: http://ant-contrib.sourceforge.net/cc.html -->
    <taskdef resource="cpptasks.tasks"> <!-- cc defineset compiler linker -->
       <classpath>
-         <pathelement location="lib/ant/cpptasks.jar" /> <!-- not supported, use: ant -lib lib/ant/cpptasks.jar ... --> 
+         <pathelement location="lib/ant/cpptasks.jar" /> <!-- not supported, use: ant -lib lib/ant/cpptasks.jar ... -->
       </classpath>
    </taskdef>
    <typedef resource="cpptasks.types"/>
@@ -118,6 +118,7 @@ TODO
    <property name="req.dir" value="./doc/requirements"/>
    <property name="docbookReq.dir" value="./doc/docbookReq"/>
    <property name="packages" value="org.xmlBlaster.*"/>
+   <property name="JUnit6.dir" value="testsuite/src/java/org/xmlBlaster/test"/>
 
    <!-- The document root of the servlet engine (deploy dir for war files): -->
    <!-- "${user.home}/jakarta-tomcat" -->
@@ -149,7 +150,7 @@ TODO
 
    <property name="cp.j2ee" value="lib/connector.jar:lib/jaas.jar:lib/jta-spec1_0_1.jar:lib/javax.jms.jar:lib/ejb2.0.jar"/>
    <property name="cp.xml" value="lib/omquery.jar:lib/xtdash.jar"/>
-   <property name="cp.core" value="lib/remotecons.jar:lib/joda-time.jar:lib/servlet.jar:lib/junit.jar:lib/xmlunit.jar:${JAVA_HOME}/lib/tools.jar:lib/gnu-regexp.jar:lib/commons-codec.jar:lib/commons-lang-2.4.jar:lib/quartz/quartz-2.3.2-full.jar:lib/commons-collections-3.2.jar"/>
+   <property name="cp.core" value="lib/remotecons.jar:lib/joda-time.jar:lib/servlet.jar:lib/xmlunit.jar:${JAVA_HOME}/lib/tools.jar:lib/gnu-regexp.jar:lib/commons-codec.jar:lib/commons-lang-2.4.jar:lib/quartz/quartz-2.3.2-full.jar:lib/commons-collections-3.2.jar:lib/junit-platform-console-standalone-6.0.3.jar"/>
 
    <property name="cp.xmlrpc3" value="lib/xmlrpc3/commons-logging-1.1.jar:lib/xmlrpc3/ws-commons-util-1.0.2.jar:lib/xmlrpc3/xmlrpc-client-3.1.1.jar:lib/xmlrpc3/xmlrpc-common-3.1.1.jar:lib/xmlrpc3/xmlrpc-server-3.1.1.jar"/>
    <property name="cp.other" value="lib/jakarta.mail-2.0.1.jar:lib/jakarta.activation-2.0.1.jar:lib/batik/batik.jar:lib/batik/js.jar:lib/jax.jar:lib/jhotdraw.jar:lib/naming-common.jar:lib/naming-java.jar:lib/commons-logging.jar:lib/log4j-api-2.16.0.jar:lib/log4j-1.2-api-2.16.0.jar:lib/log4j-core-2.16.0.jar:lib/jzlib.jar"/>
@@ -334,7 +335,7 @@ TODO
       <compilerarg value="${CFLAGS3}" if="CFLAGS3" />
   </compiler>
 
-  <!-- 
+  <!--
     Standard Mac OS X PreProcessor defines:
           _GLIBCXX_DEBUG=1
           _GLIBCXX_DEBUG_PEDANTIC=1
@@ -433,6 +434,15 @@ TODO
       <echo message="   report      --> after 'runTests' you can generate a HTML report"/>
       <echo message="                   into xmlBlaster/doc/test/report/html/junit-noframes.html"/>
       <echo message="   runTestsAndReport --> does both of above"/>
+      <echo message="   runOneSuite      --> starts xmlBlaster, runs a single package of tests, stops xmlBlaster"/>
+      <echo message="   runTestsIsolated --> starts a subset of tests (qos, jms, classtestes) generate"/>
+      <echo message="                     calling report generates it in $(report.dir)"/>
+      <echo message="   report6        --> after 'runTests' you can generate a HTML report"/>
+      <echo message="                   into xmlBlaster/doc/test/report/html/junit-noframes.html"/>
+      <echo message="   runJUnit6Test  --> starts xmlBlaster, runs a single JUnit6 test class, stops xmlBlaster"/>
+      <echo message="   runTests6      --> starts a subset of tests (qos, jms, classtestes) generate"/>
+      <echo message="                     calling report generates it in $(report.dir)"/>
+      <echo message="   testJUnit6     --> calls Junit6 with a single test"/>
       <echo message="   -Dtest.class=nameOfTestClass  runJunit --> run junit on the specifyed testclass"/>
       <echo message=""/>
       <echo message="   javadocs    --> generates the complete javadoc documentation"/>
@@ -512,7 +522,7 @@ TODO
       <echo message="Build timestamp = ${build.timestamp} version = ${version}"/>
 
       <echo message="xmlBlaster.home=${xmlBlaster.home}"/>
-      
+
       <echo message="java.specification.version=${java.specification.version}"/>
 
       <property name="JVM.target" value="${java.specification.version}" />
@@ -663,7 +673,7 @@ TODO
             <exclude name="**/client/protocol/http/j2me/XmlBlasterAccessJ2ME.java"/>
             <!-- Activate excludes to compile with JDK 1.2 -->
             <patternset id="jdk12.notcompatible.sources">
-               <!-- 
+               <!--
                <exclude name="**/jmx/**"/>
                <exclude name="**/jmxgui/**"/>
                <exclude name="**/memoryleak/**"/>
@@ -841,19 +851,19 @@ TODO
       <zipfileset src="${build.dir}/xmlBlaster.jar"
         excludes="xmlBlaster.properties,xmlBlasterPlugins.xml"/>
     </jar>
-    
+
     <jar destfile="${build.dir}/xmlBlaster.sar">
       <zipfileset dir="${src.java.dir}/org/xmlBlaster/j2ee/jmx/"
         includes="jboss-service.xml"
         prefix="META-INF"/>
       <fileset dir="${lib.dir}"
         includes="activation.jar,omquery.jar,xtdash.jar,remotecons.jar,joda-time.jar,jax.jar,xmlrpc3/commons-logging-1.1.jar,xmlrpc3/ws-commons-util-1.0.2.jar,xmlrpc3/xmlrpc-client-3.1.1.jar,xmlrpc3/xmlrpc-common-3.1.1.jar,xmlrpc3/xmlrpc-server-3.1.1.jar,gnu-regexp.jar,tinySQL.jar,jzlib.jar"
-        />                                             
+        />
       <fileset dir="${build.dir}/sar"
         includes="xmlBlaster.properties,xmlBlasterPlugins.xml,xmlBlaster.jar"
         />
     </jar>
-    
+
      <copy file="${build.dir}/xmlBlaster.sar" tofile="${lib.dir}/xmlBlaster.sar"/>
      <delete dir="${build.dir}/sar"/>
    </target>
@@ -875,7 +885,7 @@ TODO
       <zipfileset src="${build.dir}/xmlBlaster.jar"
         excludes="xmlBlaster.properties,xmlBlasterPlugins.xml"/>
     </jar>-->
-    
+
     <jar destfile="${build.dir}/xmlBlasterK2.rar" basedir="${build.dir}/ra" includes="**"/>
     <copy file="${build.dir}/xmlBlasterK2.rar" tofile="${lib.dir}/xmlBlasterK2.rar"/>
     <delete dir="${build.dir}/ra"/>
@@ -1024,8 +1034,8 @@ TODO
    <!-- =================================================================== -->
 
    <!--
-   <filelist id="j2me.preverify.cp" 
-             dir="${J2ME_HOME}/lib" 
+   <filelist id="j2me.preverify.cp"
+             dir="${J2ME_HOME}/lib"
              files="cldcapi10.jar,midpapi10.jar,${build.dir}/j2me/tmpclasses"/>
    <pathconvert targetos="${os.family}"
                 property="j2me.preverify.cp}"
@@ -1041,7 +1051,7 @@ TODO
       </not>
    </condition>
    <!-- property name="MIDlet-Jar-URL" value="http://www.xmlblaster.org/xmlBlaster/demo/j2me/SystemInfo.jar" / -->
-   <!-- Will replace the token in the SystemInfo.jad file: --> 
+   <!-- Will replace the token in the SystemInfo.jad file: -->
    <property name="MIDlet-Jar-URL" value="SystemInfo.jar" />
    <property name="MIDlet-servletUrl" value="http://server.xmlBlaster.org:8080/xmlBlaster/AppletServlet" />
 
@@ -1220,7 +1230,7 @@ TODO
          <fileset dir="${report.dir}">
             <include name="TEST-*.xml"/>
          </fileset>
-         <report format="frames" todir="${report.dir}/html"/>
+         <report format="noframes" todir="${report.dir}/html"/>
       </junitreport>
       <echo message="Test results written to '${report.htmlfile}'"/>
    </target>
@@ -1245,6 +1255,314 @@ TODO
    <target name="runTestsAndReport" depends="runTests,report" description="Does runTests and report in one step"/>
 
    <!-- =================================================================== -->
+   <!-- Run test in a fresh xmlBlaster instance                             -->
+   <!-- This is supposed to avoid issues with state carrying over between   -->
+   <!-- test Classes                                                        -->
+   <!-- test.name is the test that will be run                              -->
+   <!-- =================================================================== -->
+   <target name="runOneSuite">
+     <echo message="Running ${test.name} with fresh xmlBlaster"/>
+
+     <parallel>
+        <!-- Start server -->
+
+        <java classname="org.xmlBlaster.Main"
+              fork="true"
+              spawn="true"
+              classpath="lib/xmlBlaster.jar">
+           <sysproperty key="java.compiler" value="NONE"/>
+           <arg line="-info true"/>
+           <arg line="-useKeyboard false"/>
+        </java>
+
+        <sequential>
+        <waitfor maxwait="10" maxwaitunit="second" timeoutproperty="xmlblaster.timeout">
+          <socket server="192.168.178.65" port="7607"/>
+        </waitfor>
+        <!-- Stop server if startup failed -->
+        <if>
+          <isset property="xmlblaster.timeout"/>
+          <then>
+            <echo message="xmlBlaster failed to start, shutting it down..."/>
+            <echo message="is xmlBlaster configured to run on a different adress than \'localhost\' and Port \'7067\'..."/>
+
+            <java classname="org.xmlBlaster.test.StopXmlBlaster"
+                  dir="${xmlblaster_absolute_home}"
+                  fork="true"
+                  classpath="lib/xmlBlaster.jar:${cp}" />
+
+            <fail message="xmlBlaster did not start within 10 seconds"/>
+          </then>
+        </if>
+        <fail if="xmlblaster.timeout">
+          xmlBlaster did not start within 10 seconds on localhost:7607
+        </fail>
+
+           <!-- Run ONE test suite -->
+           <junit dir="testsuite/src/java/org/xmlBlaster/test"
+                  printsummary="on" haltonfailure="off"
+                  haltonerror="off" showoutput="on" fork="yes">
+              <formatter type="xml"/>
+              <jvmarg value="-Djava.compiler=NONE"/>
+              <jvmarg value="-Xmx256m"/>
+              <classpath>
+                 <pathelement path="lib/xmlBlaster.jar:${cp}"/>
+              </classpath>
+              <test name="${test.name}" todir="${report.dir}"/>
+           </junit>
+
+            <echo message="Tests are done, we shutown xmlBlaster now ..."/>
+           <!-- Stop server -->
+          <java classname="org.xmlBlaster.test.StopXmlBlaster"
+                dir="${xmlblaster_absolute_home}"
+                fork="true"
+                classpath="lib/xmlBlaster.jar:${cp}" />
+        </sequential>
+
+     </parallel>
+    </target>
+
+   <!-- =================================================================== -->
+   <!-- Run restart xmlBlaster between each test                            -->
+   <!--                                                                     -->
+   <!-- =================================================================== -->
+    <target name="runTestsIsolated" depends="clean,all,c" description="run tests with a fresh restart of xmlBlaster each">
+      <delete dir="${report.dir}"/>
+      <delete dir="${report.dir}/html"/>
+      <mkdir dir="${report.dir}"/>
+      <mkdir dir="${report.dir}/html"/>
+      <echo message="Executing the testsuite"/>
+      <echo message="  hint: if the script halts here you've most probably not added junit.jar to your ant/lib"/>
+
+      <!-- first the classtests should run without xmlBlaster running -->
+      <echo message="running Classtets first without xmlBlaster running..."/>
+      <junit dir="testsuite/src/java/org/xmlBlaster/test"
+             printsummary="on" haltonfailure="off"
+             haltonerror="off" showoutput="on" fork="yes">
+         <formatter type="xml"/>
+         <jvmarg value="-Djava.compiler=NONE"/>
+         <jvmarg value="-Xmx256m"/>
+         <classpath>
+            <pathelement path="lib/xmlBlaster.jar:${cp}"/>
+         </classpath>
+         <test name="org.xmlBlaster.test.classtest.AllTests" fork="yes" todir="${report.dir}"/>
+      </junit>
+
+      <!-- XmlBlaster will restart between the tests listed here -->
+      <antcall target="runOneSuite">
+         <param name="test.name" value="org.xmlBlaster.test.qos.AllTests"/>
+      </antcall>
+
+      <antcall target="runOneSuite">
+         <param name="test.name" value="org.xmlBlaster.test.jms.AllTests"/>
+      </antcall>
+
+      <echo message="Tests finished"/>
+      <echo message="genereate a Testreport with: report"/>
+      <echo message="if a lot of tests fail, no database is installed or the ram based queue in xmlBlaster.properties might be enabled"/>
+      <!-- add more as needed -->
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Run all JUnit6 tests and restart xmlBlaster between each test       -->
+    <!--                                                                     -->
+    <!-- =================================================================== -->
+    <target name="runTests6" depends="clean,all, c">
+      <delete dir="${report.dir}"/>
+      <delete dir="${report.dir}/html"/>
+      <mkdir dir="${report.dir}"/>
+      <mkdir dir="${report.dir}/html"/>
+      <!-- Classtets first without xmlBlaster running -->
+      <echo message="running Classtets first without xmlBlaster running..."/>
+      <antcall target="testJUnit6">
+        <param name="test.className" value="org.xmlBlaster.test.classtest.AllTests"/>
+      </antcall>
+
+
+      <!-- XmlBlaster will restart between the tests listed here -->
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.qos.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.jms.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.C.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.client.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.topic.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.authentication.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.mime.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.dispatch.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.distributor.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.jdbc.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.snmp.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.persistence.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.cluster.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.j2ee.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.stress.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.jmx.AllTests"/>
+      </antcall>
+      <antcall target="runJUnit6Test">
+        <param name="test.name" value="org.xmlBlaster.test.classloader.AllTests"/>
+      </antcall>
+
+      <echo message="##############################################"/>
+      <echo message="Tests finished"/>
+      <echo message="genereate a Testreport with: 6report"/>
+      <echo message="if a lot of tests fail, no database is installed or the ram based queue in xmlBlaster.properties might be enabled"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Generate the report from JUnit6 tests                               -->
+    <!-- =================================================================== -->
+    <target name="6report">
+      <junitreport todir="${report.dir}">
+        <fileset dir="${report.dir}">
+          <include name="**/TEST-*.xml"/>
+        </fileset>
+        <report format="noframes" todir="${report.dir}/html"/>
+      </junitreport>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Start xmlBlaster and run a single JUnit6 Test                       -->
+    <!--                                                                     -->
+    <!-- =================================================================== -->
+    <target name="runJUnit6Test">
+      <echo message="##############################################"/>
+      <echo message="Running ${test.name} with fresh xmlBlaster"/>
+      <echo message="##############################################"/>
+
+      <parallel>
+        <!-- ############ Start server ################# -->
+        <java classname="org.xmlBlaster.Main"
+              fork="true"
+              spawn="true"
+              classpath="lib/xmlBlaster.jar">
+          <sysproperty key="java.compiler" value="NONE"/>
+          <arg line="-info true"/>
+          <arg line="-useKeyboard false"/>
+        </java>
+        <sequential>
+          <waitfor maxwait="10" maxwaitunit="second" timeoutproperty="xmlblaster.timeout">
+            <socket server="192.168.178.65" port="7607"/>
+          </waitfor>
+          <!-- Stop server if startup failed -->
+          <if>
+            <isset property="xmlblaster.timeout"/>
+          <then>
+              <echo message="xmlBlaster failed to start, shutting it down..."/>
+              <echo message="is xmlBlaster configured to run on a different adress than \'localhost\' and Port \'7067\'..."/>
+
+              <java classname="org.xmlBlaster.test.StopXmlBlaster"
+                    dir="${xmlblaster_absolute_home}"
+                    fork="true"
+                    classpath="lib/xmlBlaster.jar:${cp}" />
+                <fail message="xmlBlaster did not start within 10 seconds"/>
+          </then>
+          </if>
+          <fail if="xmlblaster.timeout">
+              xmlBlaster did not start within 10 seconds on localhost:7607
+          </fail>
+
+          <!-- ############ run the test ################# -->
+          <antcall target="testJUnit6">
+            <param name="test.className" value="${test.name}"/>
+          </antcall>
+
+          <!-- ############ Stop server ################## -->
+          <echo message="##############################################"/>
+          <echo message="Test is done, shutting down xmlBlaster now ..."/>
+          <echo message="##############################################"/>
+          <java classname="org.xmlBlaster.test.StopXmlBlaster"
+                dir="${xmlblaster_absolute_home}"
+                fork="true"
+                classpath="lib/xmlBlaster.jar:${cp}" />
+        </sequential>
+      </parallel>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Run a single Test with JUnit6                                       -->
+    <!-- move reports into ${report.dir}/${test.className}         -->
+    <!-- =================================================================== -->
+    <target name="testJUnit6">
+      <java classname="org.junit.platform.console.ConsoleLauncher"
+            fork="true"
+            classpath="lib/xmlBlaster.jar:${cp}"
+            dir="${JUnit6.dir}"
+            failonerror="false">
+        <classpath>
+          <!-- JUnit 6 -->
+          <pathelement location="lib/junit-platform-console-standalone-6.0.3.jar"/>
+
+          <pathelement location="${build.dest}"/>
+          <pathelement location="${lib.dir}/testsuite.jar"/>
+          <pathelement location="${build.dir}"/>
+          <pathelement path="$lib/xmlBlaster.jar:${cp}"/>
+        </classpath>
+
+
+        <!-- COMMAND -->
+        <arg value="execute"/>
+        <arg value="--select-class=${test.className}"/>
+        <!-- optional -->
+        <arg value="--details=tree"/>
+        <!-- generate results, we need to escape the java dir-->
+        <!--  either use "../../../../../../${report.dir}" or the move command -->
+        <arg line="--reports-dir tmpReport"/>
+      </java>
+      <!-- report -->
+      <move todir="${report.dir}/${test.className}">
+        <fileset dir="${JUnit6.dir}/tmpReport">
+          <include name="**/*"/>
+          <!-- match all files recursively -->
+        </fileset>
+      </move>
+      <!-- Use replaceregexp to modify ONLY the name attribute of <testsuite> -->
+      <replaceregexp byline="true">
+        <fileset dir="${report.dir}/${test.className}">
+          <include name="**/*.xml"/>
+        </fileset>
+
+      <regexp pattern='(testsuite name=")([^"]*")'/>
+
+        <substitution expression="\1${test.className} - \2"/>
+      </replaceregexp>
+      <delete dir="${JUnit6.dir}/tmpReport"/>
+    </target>
+
+
+
+
+   <!-- =================================================================== -->
    <!-- starts xmlBlaster JMX GUI                                           -->
    <!-- =================================================================== -->
    <target name="runJmxGUI" description="Run GUI that connects to jmx Server">
@@ -1253,7 +1571,7 @@ TODO
                 <sysproperty key="java.compiler" value="NONE"/>
         </java>
    </target>
-         
+
    <!-- =================================================================== -->
    <!-- Creates complete documentation                                      -->
    <!-- =================================================================== -->
@@ -1461,29 +1779,29 @@ TODO
       <style processor="trax" basedir="${docbookReq.dir}"
              in="${docbookReq.dir}/client.c.socket.xml"
              out="${docbookReq.dir}/test0.html"
-             extension=".xml" 
+             extension=".xml"
              style="${docbookReq.dir}/../docbook/docbookXmlBlaster.xsl"
-             force="true">              
+             force="true">
        </style>
       <style processor="trax" basedir="${docbookReq.dir}"
              in="${docbookReq.dir}/test0.html"
              out="${docbookReq.dir}/test1.html"
-             extension=".xml" 
+             extension=".xml"
              style="${docbookReq.dir}/embedSource.xsl"
-             force="true">              
+             force="true">
        </style>
     </target>
 
     <target name="docbookReq" description="Creates new html requirements from docbook doc/docbookReq/ XML files">
 
-      <style processor="trax" 
+      <style processor="trax"
              basedir="doc/requirements"
              destdir="${docbookReq.dir}"
              includes="*.xml"
              excludes="all.xml"
-             extension=".xml" 
+             extension=".xml"
              style="${docbookReq.dir}/req2Docbook.xsl"
-             force="true">              
+             force="true">
        </style>
 
       <!-- Create the errorCode listing requirement first: -->
@@ -1505,16 +1823,16 @@ TODO
       </pathconvert>
       <echo file="${docbookReq.dir}/all.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
    <files><url>${files}</url></files>]]></echo>
-      <!-- Create the overview -->                   
+      <!-- Create the overview -->
       <!--
       <style processor="trax" basedir="${docbookReq.dir}"
              in="${docbookReq.dir}/all.xml"
              out="${docbookReq.dir}/requirement.html"
              extension=".html" style="${docbookReq.dir}/createOverview.xsl"
-             force="true">              
+             force="true">
          <xmlcatalog>
             <dtd publicId="-//OASIS//DTD DocBook XML V4.2//EN" location="doc/dtd/docbookx.dtd" />
-         </xmlcatalog>    
+         </xmlcatalog>
        </style>
        -->
 
@@ -1522,14 +1840,14 @@ TODO
              in="${docbookReq.dir}/all.xml"
              out="${docbookReq.dir}/requirement.xml"
              extension=".xml" style="${docbookReq.dir}/createOverview.xsl"
-             force="true">              
+             force="true">
        </style>
 <!--
       <style processor="trax" basedir="${docbookReq.dir}"
              in="${docbookReq.dir}/requirement.html"
              out="${docbookReq.dir}/menu.xml"
              extension=".html" style="${docbookReq.dir}/createMenu.xsl"
-             force="true">              
+             force="true">
        </style>
 
 
@@ -1537,7 +1855,7 @@ TODO
              in="${docbookReq.dir}/requirement.html"
              out="${docbookReq.dir}/menu.xml"
              extension=".html" style="${docbookReq.dir}/createMenu.xsl"
-             force="true">              
+             force="true">
        </style>
 -->
       <!-- generate each req -->
@@ -1550,7 +1868,7 @@ TODO
              force="true">
          <xmlcatalog>
             <dtd publicId="-//OASIS//DTD DocBook XML V4.2//EN" location="doc/dtd/docbookx.dtd" />
-         </xmlcatalog>    
+         </xmlcatalog>
        </style>
       -->
    </target>
@@ -1634,7 +1952,7 @@ TODO
       <property name="ADD_DIRECTORY" value="false"/>  <!-- e.g. -DADD_DIRECTORY=myclient/classes -->
       <property name="ADD_EMAIL" value="true"/>
       <property name="ADD_JAVACLIENTS" value="true"/>
-                      
+
       <mkdir dir="${DIST_PATH}/lib"/>
 
       <unjar src="${lib.dir}/${name}.jar" dest="${dist-classes.dir}" />
@@ -1852,7 +2170,7 @@ TODO
             <include name="org/xmlBlaster/client/protocol/*.class"/>
             <include name="org/xmlBlaster/client/protocol/socket/*"/>
             <include name="org/xmlBlaster/client/queuemsg/*"/>
-                
+
             <exclude name="org/xmlBlaster/client/Javascript*"/>
             <exclude name="org/xmlBlaster/client/script/*.class"/>
             <exclude name="org/xmlBlaster/client/XmlDbMessageWrapper.*"/>
@@ -1907,7 +2225,7 @@ TODO
             <include name="org/xmlBlaster/util/queuemsg/*.class"/>
             <include name="org/xmlBlaster/util/xbformat/*.class"/>
             <include name="org/xmlBlaster/util/http/*.class"/>
-                
+
             <exclude name="org/xmlBlaster/util/checkpoint/**"/>
             <exclude name="org/xmlBlaster/util/lexical/**"/>
             <exclude name="org/xmlBlaster/util/servlet/**"/>
@@ -2070,7 +2388,7 @@ TODO
       <mkdir dir="${JRE_HOME}/axbridge/bin"/>
       <delete file="${JRE_HOME}/axbridge/lib/xmlBlasterActiveX.jar"/>
       <delete file="${JRE_HOME}/axbridge/bin/XmlScriptAccess.dll"/>
-      
+
       <jar destfile="${build.dir}/xmlBlasterActiveX.jar"
            manifest="${src.java.dir}/org/xmlBlaster/client/activex/manifest.activex"
            basedir="${build.dest}"
@@ -2334,7 +2652,7 @@ TODO
          <sysincludepath location="${xerces.include.dir}" />           <!-- Since xerces 1.7.0 (inclusive xerces 2.6) -->
 
          <includepath location="${build.src.c.dir}" />   <!-- Using the C SOCKET client library -->
-         
+
          <defineset> <!-- See compiler id="base-msvc" at top of file -->
            <define name="XBL_IDL_WITH_WSTRING" value="1" if="XBL_IDL_WITH_WSTRING" />
            <define name="COMPILE_SOCKET_PLUGIN" value="1" if="COMPILE_SOCKET_DEFINE" />   <!-- Add the C socket library wrapper plugin? -->
@@ -2407,7 +2725,7 @@ TODO
             <!-- xmlBlasterClientC.so -->
             <libset dir="${lib.dir}" libs="${c.lib.name}" />
 
-            <!-- libsqlite.so --> 
+            <!-- libsqlite.so -->
             <libset dir="${sqlite.lib.dir}" libs="sqlite" if="XMLBLASTER_PERSISTENT_QUEUE" />
             <libset dir="${sqlite.lib.dir}" libs="sqlite3" if="XMLBLASTER_PERSISTENT_QUEUE_SQLITE3" />
 
@@ -3019,11 +3337,11 @@ TODO
       <exec executable="${csharp.compiler.exe}" dir="${src.csharp.dir}" failonerror="true" failifexecutionfails="false">
          <arg line="-debug+ /unsafe /warn:4 -out:${csharp.out.exe} PInvokeCE.cs XmlBlasterAccess.cs Key.cs Qos.cs TestPinvoke.cs util/*.cs service/*.cs"/>
       </exec>
-      <echo message="Created C# demo ${src.csharp.dir}/${csharp.out.exe}"/> 
+      <echo message="Created C# demo ${src.csharp.dir}/${csharp.out.exe}"/>
    </target>
 
    <!--
-    Using mono 'mcs' for C#1 or 'gmcs' for C#2 
+    Using mono 'mcs' for C#1 or 'gmcs' for C#2
     mcs /d:"XMLBLASTER_MONO;BLA;BLUB" -debug+ -out:Hello.exe NativeC.cs XmlBlasterAccess.cs Key.cs Qos.cs Hello.cs
    -->
    <target name="csharp-mono" depends="prepare" description="Compile C# demo client" if="unix">
@@ -3033,8 +3351,8 @@ TODO
       <exec executable="${csharp.compiler.exe}" dir="${src.csharp.dir}" failonerror="true" failifexecutionfails="false">
          <arg line="-debug+ /unsafe /warn:4 /define:'XMLBLASTER_MONO' -out:${csharp.out.exe} PInvokeCE.cs NativeC.cs client/XmlBlasterAccess.cs client/Key.cs client/Qos.cs Hello.cs util/*.cs service/*.cs"/>
       </exec>
-      <echo message="Created C# demo ${src.csharp.dir}/${csharp.out.exe}"/> 
-      <echo message="Usage: 'mono ${src.csharp.dir}/${csharp.out.exe} -dispatch/connection/plugin/socket/hostname localhost'"/> 
+      <echo message="Created C# demo ${src.csharp.dir}/${csharp.out.exe}"/>
+      <echo message="Usage: 'mono ${src.csharp.dir}/${csharp.out.exe} -dispatch/connection/plugin/socket/hostname localhost'"/>
    </target>
 
    <target name="bin-win-prepare" depends="prepare,revisionnumber">
@@ -3051,23 +3369,23 @@ TODO
             Compile a 'Debug' and a 'Release' variant and copy Relase\xerces-c_2.* to Debug\
 
          XMLBLASTER_COMPILE_LOG4CPLUS_PLUGIN=1
-         
+
          XMLBLASTER_ZLIB=1
          zlib.include.dir=E:/zlib/include
          zlib.lib.dir=E:/zlib/lib
          zlib.lib.name=zdll
          zlib.dll.name=zlib1.dll
-         
+
          xerces.include.dir=E:/xerces-c-src_2_7_0/src
          xerces.lib.dir=E:/xerces-c-src_2_7_0/Build/Win32/VC7.1/Debug
          xerces.lib.name=xerces-c_2
          xerces.dll.name=xerces-c_2_7
-         
+
          XMLBLASTER_PERSISTENT_QUEUE=1
          XMLBLASTER_PERSISTENT_QUEUE_SQLITE3=1
          sqlite.include.dir=E:/sqlite
          sqlite.lib.dir=E:/sqlite
-         
+
          COMPILE_SOCKET_PLUGIN = 1
 
          build c-delete cpp-delete
@@ -3076,7 +3394,7 @@ TODO
          recompile c client lib with VC++ (to be C# compatible, i couldn't find out which compiler setting is wrong, but ant-dlls are not found by csharp, dumpbin.exe shows differernces)
          build csharp
        -->
-      
+
       <mkdir dir="${bin-win.dir}"/>
       <tstamp>
          <format property="touch.time" pattern="yyyy-MM-dd hh:mm aa"/>
@@ -3098,7 +3416,7 @@ Version:
    pthreads 2.8.0 (for ARM 2.8 with WINCE patch)
 
    zlib 1.2.3
-   
+
 
 
 See:
